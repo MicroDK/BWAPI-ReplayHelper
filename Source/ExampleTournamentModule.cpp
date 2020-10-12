@@ -99,7 +99,7 @@ void ExampleTournamentAI::drawTournamentModuleSettings(int x, int y)
 		Playerset playerset = Broodwar->getPlayers();
 		for each (Player player in playerset)
 		{
-			if (!player->isObserver())
+			if (!player->isObserver() && !player->isNeutral())
 			{
 				int workers = 0;
 				Unitset units = player->getUnits();
@@ -113,9 +113,11 @@ void ExampleTournamentAI::drawTournamentModuleSettings(int x, int y)
 					}
 				}
 
+				std::string race = player->getRace().c_str();
+
 				//Broodwar->setTextSize(BWAPI::Text::Size::Large);
 				char textcolor = player->getTextColor();
-				Broodwar->drawTextScreen(drawX_bots, drawY_bots, "\%c%s", textcolor, player->getName().c_str());
+				Broodwar->drawTextScreen(drawX_bots, drawY_bots, "\%c%s (%c)", textcolor, player->getName().c_str(), race);
 				Broodwar->drawTextScreen(drawX_bots + 120, drawY_bots, "\x1Fm: \x04%d", player->minerals());
 				Broodwar->drawTextScreen(drawX_bots + 172, drawY_bots, "\x07g: \x04%d", player->gas());
 				Broodwar->drawTextScreen(drawX_bots + 224, drawY_bots, "\x05w: \x04%d", workers);
