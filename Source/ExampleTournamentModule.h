@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <sstream>
 #include "AutoObserver.h"
+#include "CameraModule.h"
 
 #define DEFAULT_COMMAND_OPTIMIZATION 1
 #define MINIMUM_COMMAND_OPTIMIZATION 0
@@ -23,6 +24,7 @@ class ExampleTournamentModule : public BWAPI::TournamentModule
 class ExampleTournamentAI : public BWAPI::AIModule
 {
     AutoObserver _autoObserver;
+	CameraModule _cameraModule;
 
 public:
 

@@ -12,4 +12,5 @@ public:
 
     AutoObserver();
     void onFrame();
+	void onUnitCreate(BWAPI::Unit unit);
 };

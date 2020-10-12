@@ -19,7 +19,7 @@ void AutoObserver::onFrame()
 		    if (unit->isUnderAttack() || unit->isAttacking())
 		    {
 			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
-                _unitFollowFrames = 8*24;
+                _unitFollowFrames = 8 * 24;
                 _observerFollowingUnit = unit;
                 pickUnitToFollow = false;
                 break;
@@ -34,7 +34,7 @@ void AutoObserver::onFrame()
 		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
 		    {
 			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
-                _unitFollowFrames = 4*24;
+                _unitFollowFrames = 4 * 24;
                 _observerFollowingUnit = unit;
                 pickUnitToFollow = false;
                 break;
@@ -46,4 +46,15 @@ void AutoObserver::onFrame()
     {
         BWAPI::Broodwar->setScreenPosition(_observerFollowingUnit->getPosition() - BWAPI::Position(320, 180));
     }
+}
+
+void AutoObserver::onUnitCreate(BWAPI::Unit unit)
+{
+	int mult = 3;
+	if (BWAPI::Broodwar->getFrameCount() - _cameraLastMoved < 4 * 24 * mult)
+	{
+		return;
+	}
+	BWAPI::Broodwar->setScreenPosition(unit->getPosition() - BWAPI::Position(320, 240));
+	_cameraLastMoved = BWAPI::Broodwar->getFrameCount();
 }

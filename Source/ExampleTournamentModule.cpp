@@ -9,8 +9,11 @@ int frameSkip = 0;
 std::string mapName = "";
 
 bool drawBotNames = true;
-bool drawUnitInfo = true;
-bool drawGameInfo = true;
+bool drawGameInfo = false;
+bool drawUnitInfo = false;
+
+bool useCameraModule = true;
+bool useAutoObserver = false;
 
 char buffer[MAX_PATH];
 
@@ -34,6 +37,22 @@ void ExampleTournamentAI::onStart()
 		//if (c == '.')
 		//	break;
 	}
+
+	// Use Camera Module
+	if (useCameraModule)
+	{
+		// Find one of the players start position
+		auto startPos = Position(0, 0);
+		auto playerset = Broodwar->getPlayers();
+		for each (Player player in playerset)
+		{
+			if (!player->isObserver() && !player->isNeutral())
+			{
+				startPos = Position(player->getStartLocation());
+			}
+		}
+		_cameraModule.onStart(startPos, 640, 480);
+	}
 }
 
 void ExampleTournamentAI::onEnd(bool isWinner)
@@ -45,15 +64,20 @@ void ExampleTournamentAI::onFrame()
 	if (Broodwar->isPaused())
 		return;
 
-	//Broodwar->setLocalSpeed(localSpeed);
+	if (useCameraModule)
+	{
+		_cameraModule.onFrame();
+	}
+	else if (useAutoObserver)
+	{
+		_autoObserver.onFrame();
+	}
 
-	_autoObserver.onFrame();
-
-	drawTournamentModuleSettings(10, 10);
+	drawTournamentModuleSettings(6, 12);
 
 	if (drawUnitInfo)
 	{
-		drawUnitInformation(460,10);
+		drawUnitInformation(460,12);
 	}
 }
 
@@ -162,7 +186,7 @@ void ExampleTournamentAI::drawUnitInformation(int x, int y)
 
 void ExampleTournamentAI::onSendText(std::string text)
 {
-	Broodwar->printf("onSendText: %s", text.c_str());
+	//Broodwar->printf("onSendText: %s", text.c_str());
 
 	std::stringstream ss(text);
 
@@ -216,12 +240,33 @@ void ExampleTournamentAI::onSendText(std::string text)
 				drawGameInfo = false;
 			Broodwar->printf("drawGameInfo set to %d", drawGameInfo);
 		}
+		else if (variableName == "usecameramodule")
+		{
+			if (GetIntFromString(val) == 1)
+			{
+				useCameraModule = true; 
+				useAutoObserver = false;
+			}
+			else
+				useCameraModule = false;
+			Broodwar->printf("useCameraModule set to %d", useCameraModule);
+		}
+		else if (variableName == "useautoobserver")
+		{
+			if (GetIntFromString(val) == 1)
+			{
+				useAutoObserver = true;
+				useCameraModule = false;
+			}
+			else
+				useAutoObserver = false;
+			Broodwar->printf("useAutoObserver set to %d", useAutoObserver);
+		}
 	}
 }
 
 void ExampleTournamentAI::onReceiveText(BWAPI::Player player, std::string text)
 {
-	Broodwar->printf("onReceiveText: %s", text.c_str());
 }
 
 void ExampleTournamentAI::onPlayerLeft(BWAPI::Player player)
@@ -254,15 +299,14 @@ void ExampleTournamentAI::onUnitHide(BWAPI::Unit unit)
 
 void ExampleTournamentAI::onUnitCreate(BWAPI::Unit unit)
 {
-	int mult = 3;
-
-	if (Broodwar->getFrameCount() - lastMoved < cameraMoveTime*mult)
+	if (useCameraModule)
 	{
-		return;
+		_cameraModule.moveCameraUnitCreated(unit);
 	}
-
-	Broodwar->setScreenPosition(unit->getPosition() - Position(320, 240));
-	lastMoved = Broodwar->getFrameCount();
+	else if (useAutoObserver)
+	{
+		_autoObserver.onUnitCreate(unit);
+	}
 }
 
 void ExampleTournamentAI::onUnitDestroy(BWAPI::Unit unit)
