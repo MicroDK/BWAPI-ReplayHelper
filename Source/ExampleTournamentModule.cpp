@@ -9,11 +9,11 @@ int frameSkip = 0;
 std::string mapName = "";
 
 bool drawBotNames = true;
-bool drawGameInfo = false;
-bool drawUnitInfo = false;
+bool drawGameInfo = true;
+bool drawUnitInfo = true;
 
 bool useCameraModule = true;
-bool useAutoObserver = false;
+bool useAutoObserver = true;
 
 char buffer[MAX_PATH];
 
@@ -26,7 +26,7 @@ void ExampleTournamentAI::onStart()
 	Broodwar->setCommandOptimizationLevel(DEFAULT_COMMAND_OPTIMIZATION);
 
 	parseConfigFile("bwapi-data\\ReplayHelper_settings.ini");
-	
+
 	Broodwar->setLocalSpeed(localSpeed);
 	Broodwar->setFrameSkip(frameSkip);
 
@@ -449,11 +449,36 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
 				drawBotNames = false;
 			}
         }
+		else if (strcmp(option.c_str(), "UseAutoObserver") == 0)
+		{
+			std::string val;
+			iss >> val;
+
+			if (strcmp(val.c_str(), "false") == 0)
+			{
+				useAutoObserver = false;
+			}
+		}
+		else if (strcmp(option.c_str(), "UseCameraModule") == 0)
+		{
+			std::string val;
+			iss >> val;
+
+			if (strcmp(val.c_str(), "false") == 0)
+			{
+				useCameraModule = false;
+			}
+		}
 		else
 		{
 			Broodwar->printf("Invalid Option in Tournament Module Settings: %s", option.c_str());
 		}
     }
+
+	if (useCameraModule && useAutoObserver)
+	{
+		useAutoObserver = false;
+	}
 }
 
 int ExampleTournamentAI::GetIntFromString(const std::string & s)
