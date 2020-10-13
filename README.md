@@ -13,5 +13,7 @@ Place the settings file ReplayHelper_settings.ini in the same directory as Repla
 /set drawgameinfo 1/0  
 /set drawplayerinfo 1/0  
 /set drawunitinfo 1/0  
+/set useautoobserver 1/0  
+/set usecameramodule 1/0  
 
 These features can also be set in the settings file.
