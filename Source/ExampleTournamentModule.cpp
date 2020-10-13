@@ -4,16 +4,17 @@ using namespace BWAPI;
 
 int cameraMoveTime = 4*24;
 int lastMoved = 0;
-int localSpeed = 0;
-int frameSkip = 0;
 std::string mapName = "";
 
-bool drawBotNames = true;
-bool drawGameInfo = true;
-bool drawUnitInfo = true;
+int localSpeed = 21;
+int frameSkip = 0;
 
+bool drawBotNames = true;
+bool drawGameInfo = false;
+bool drawUnitInfo = false;
+
+bool useAutoObserver = false;
 bool useCameraModule = true;
-bool useAutoObserver = true;
 
 char buffer[MAX_PATH];
 
@@ -377,7 +378,7 @@ std::vector<std::string> ExampleTournamentAI::getLines(const std::string & filen
     std::ifstream fin(filename.c_str());
     if (!fin.is_open())
     {
-		Broodwar->printf("Tournament Module Settings File Not Found, Using Defaults", filename.c_str());
+		Broodwar->printf("Settings File Not Found, Using Defaults", filename.c_str());
 		return std::vector<std::string>();
     }
 
@@ -426,7 +427,11 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
             std::string val;
 			iss >> val;
             
-			if (strcmp(val.c_str(), "false") == 0)
+			if (strcmp(val.c_str(), "true") == 0)
+			{
+				drawUnitInfo = true;
+			}
+			else if (strcmp(val.c_str(), "false") == 0)
 			{
 				drawUnitInfo = false;
 			}
@@ -436,7 +441,11 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
             std::string val;
 			iss >> val;
             
-			if (strcmp(val.c_str(), "false") == 0)
+			if (strcmp(val.c_str(), "true") == 0)
+			{
+				drawGameInfo = true;
+			}
+			else if (strcmp(val.c_str(), "false") == 0)
 			{
 				drawGameInfo = false;
 			}
@@ -446,7 +455,11 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
             std::string val;
 			iss >> val;
             
-			if (strcmp(val.c_str(), "false") == 0)
+			if (strcmp(val.c_str(), "true") == 0)
+			{
+				drawBotNames = true;
+			}
+			else if (strcmp(val.c_str(), "false") == 0)
 			{
 				drawBotNames = false;
 			}
@@ -456,7 +469,11 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
 			std::string val;
 			iss >> val;
 
-			if (strcmp(val.c_str(), "false") == 0)
+			if (strcmp(val.c_str(), "true") == 0)
+			{
+				useAutoObserver = true;
+			}
+			else if (strcmp(val.c_str(), "false") == 0)
 			{
 				useAutoObserver = false;
 			}
@@ -466,17 +483,22 @@ void ExampleTournamentAI::parseConfigFile(const std::string & filename)
 			std::string val;
 			iss >> val;
 
-			if (strcmp(val.c_str(), "false") == 0)
+			if (strcmp(val.c_str(), "true") == 0)
+			{
+				useCameraModule = true;
+			}
+			else if (strcmp(val.c_str(), "false") == 0)
 			{
 				useCameraModule = false;
 			}
 		}
 		else
 		{
-			Broodwar->printf("Invalid Option in Tournament Module Settings: %s", option.c_str());
+			Broodwar->printf("Invalid Option in Settings: %s", option.c_str());
 		}
     }
 
+	//We can only use one auto observer
 	if (useCameraModule && useAutoObserver)
 	{
 		useAutoObserver = false;
